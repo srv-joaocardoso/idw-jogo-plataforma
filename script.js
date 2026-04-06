@@ -35,7 +35,7 @@ class Jogo {
 
             if (!this.VerificarColisao(elemento.elemento, this.AreaDoJogo)) {
                 if (elemento.classe == "plataforma") {
-                    elemento.posicao.y = 0
+                    elemento.posicao.y -= this.dimensoes.altura
                 }
 
                 if (elemento.classe == "jogador") {
