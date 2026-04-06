@@ -13,7 +13,7 @@ class Jogo {
         this.plataformas = []
         this.ultimaPlataforma = null
 
-        this.AreaDoJogo = this.NovoJogo()
+        this.elementoHTMLdoJogo = this.NovoJogo()
         this.pontuacao = this.InicializarPontuacao()
         this.LoopJogo()
     }
@@ -27,13 +27,19 @@ class Jogo {
 
         this.jogador.posicao.x = this.posicaoMouseX
 
+        this.plataformas.forEach((plataforma) => {
+            if (this.VerificarColisao(this.jogador.elemento, plataforma.elemento)) {
+                plataforma.AcaoAoColidirComJogador(this.jogador)
+            }
+        })
+
         todosOsObjetos.forEach(elemento => {
             if (this.jogador.posicao.y < this.dimensoes.altura / 2) {
                 elemento.posicao.y += 4
                 if (elemento.classe == "jogador") elemento.yBasePulo += 4
             }
 
-            if (!this.VerificarColisao(elemento.elemento, this.AreaDoJogo)) {
+            if (!this.VerificarColisao(elemento.elemento, this.elementoHTMLdoJogo)) {
                 if (elemento.classe == "plataforma") {
                     elemento.posicao.y -= this.dimensoes.altura
                 }
@@ -42,18 +48,6 @@ class Jogo {
                     this.NovoJogo()
                 }
             }
-
-
-            if (elemento.classe == "plataforma" && this.jogador.estado == "caindo" && this.VerificarColisao(this.jogador.elemento, elemento.elemento)) {
-                this.jogador.AplicarPulo()
-
-                if (elemento !== this.ultimaPlataforma) {
-                    this.pontuacao.Adicionar()
-                    this.ultimaPlataforma = elemento
-                }
-
-            }
-
         })
 
 
@@ -72,33 +66,33 @@ class Jogo {
     }
 
     NovoJogo() {
-        this.main = document.querySelector('main')
+        const main = document.querySelector('main')
+        main.style.width = this.dimensoes.largura + "px"
+        main.style.height = this.dimensoes.altura + "px"
+
         this.plataformas.forEach(plataforma => plataforma.elemento.remove())
+
         if (this.pontuacao)
             this.pontuacao.Definir(0)
-        this.main.style.width = this.dimensoes.largura + "px"
-        this.main.style.height = this.dimensoes.altura + "px"
-        this.jogador.elemento.remove()
-        this.jogador = new Jogador(this.posicaoMouseX)
+
         this.jogador.yBasePulo = this.jogador.posicao.y
         this.jogador.estado = "pulando"
+
         this.plataformas = []
         this.InicializarPlataformas()
 
-
-        return this.main
+        return main
     }
 
     InicializarPontuacao() {
         const elementoPontuacao = document.createElement('h1')
-        this.AreaDoJogo.append(elementoPontuacao)
+        this.elementoHTMLdoJogo.append(elementoPontuacao)
         let valor = 0
 
         elementoPontuacao.style.position = "absolute"
         elementoPontuacao.style.left = this.dimensoes.largura / 2 + "px"
         elementoPontuacao.style.top = "0"
         elementoPontuacao.style.transform = "translateX(-50%)"
-        elementoPontuacao.style.textAlign = "center"
         elementoPontuacao.style.zIndex = "999"
 
         function Renderizar() {
@@ -135,7 +129,7 @@ class Jogo {
     }
 
     InicializarPlataformas() {
-        this.primeiraPlataforma = new Plataforma(this.jogador.posicao.x, this.dimensoes.altura - this.jogador.dimensoes.altura)
+        this.primeiraPlataforma = new PlataformaPulante(this.jogador.posicao.x, this.dimensoes.altura - this.jogador.dimensoes.altura)
 
         this.plataformas.push(this.primeiraPlataforma)
         this.intervaloEntrePlataformas = this.jogador.alturaPulo * 0.9
@@ -143,7 +137,7 @@ class Jogo {
 
         Array(Math.floor(this.dimensoes.altura / this.intervaloEntrePlataformas))
             .fill()
-            .forEach((_, i) => this.plataformas.push(new Plataforma(Math.random() * (
+            .forEach((_, i) => this.plataformas.push(new PlataformaPulante(Math.random() * (
                 this.dimensoes.largura - this.primeiraPlataforma.dimensoes.largura
             ), this.primeiraPlataforma.posicao.y - ((i + 1) * this.intervaloEntrePlataformas)
             )))
@@ -164,6 +158,7 @@ class ObjetoDoJogo {
         }
 
         this.classe = ""
+
 
         this.processos = []
     }
@@ -245,8 +240,21 @@ class Plataforma extends ObjetoDoJogo {
         this.dimensoes.largura = 40
         this.dimensoes.altura = 3
         this.classe = "plataforma"
+        this.AcaoAoColidirComJogador = () => { }
 
         this.Criar()
+    }
+}
+
+class PlataformaPulante extends Plataforma {
+    constructor(x, y) {
+        super(x, y)
+
+        this.AcaoAoColidirComJogador = (jogador = new Jogador) => {
+            if (jogador.estado === "caindo") {
+                jogador.AplicarPulo()
+            }
+        }
     }
 }
 
