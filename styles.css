@@ -1,0 +1,21 @@
+* {
+    cursor: none;
+    margin: 0;
+}
+
+body {
+    background-color: black;
+}
+
+main {
+    background-color: yellow;
+    overflow: hidden;
+}
+
+.jogador {
+    background-color: blue;
+}
+
+.plataforma {
+    background-color: red;
+}
