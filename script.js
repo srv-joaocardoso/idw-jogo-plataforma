@@ -71,12 +71,14 @@ class Jogo {
 
             if (!this.VerificarColisao(elemento.elemento, this.AreaDoJogo)) {
                 if (elemento.classe == "plataforma") {
-                    elemento.posicao.y = 20
+                    elemento.posicao.y = 0
                 }
 
                 if (elemento.classe == "jogador") {
                     this.jogador.elemento.remove()
                     this.jogador = new Jogador()
+                    this.jogador.yBase = this.jogador.posicao.y
+                    this.jogador.estado = "pulando"
                 }
             }
 
@@ -181,6 +183,5 @@ class Plataforma extends ObjetoDoJogo {
         this.Criar()
     }
 }
-
 
 const jogo = new Jogo()
