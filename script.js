@@ -23,7 +23,7 @@ class Jogo {
 
         // Processamento
 
-        todosOsObjetos.forEach(acc => acc.RodarTodosOsProcessos())
+        todosOsObjetos.forEach(acc => acc.rodarTodosOsProcessos())
 
         this.jogador.posicao.x = this.posicaoMouseX
 
@@ -50,11 +50,9 @@ class Jogo {
             }
         })
 
-
         // Renderização
-
         todosOsObjetos.forEach((el) => {
-            el.Renderizar()
+            el.renderizar()
         })
 
         if (this.pontuacao) {
@@ -192,22 +190,23 @@ class ObjetoDoJogo {
 class Jogador extends ObjetoDoJogo {
     constructor(x) {
         super();
-        this.posicao.x = x;
-        this.posicao.y = 500;
-        this.dimensoes.largura = 20;
-        this.dimensoes.altura = 20;
-        this.classe = "jogador";
+        this.posicao.x = x
+        this.posicao.y = 500
+        this.dimensoes.largura = 20
+        this.dimensoes.altura = 20
+        this.classe = "jogador"
+        this.pontuacao = 0
 
         this.estado = "pulando"
 
-        this.alturaPulo = 150;
-        this.yBasePulo = 0;
-        this.velocidade = 5;
+        this.alturaPulo = 150
+        this.yBasePulo = 0
+        this.velocidade = 5
 
-        this.Criar();
-        this.AplicarPulo();
+        this.Criar()
+        this.AplicarPulo()
 
-        this.AdicionarProcesso(() => { if (this.estado === "pulando") this.Pular(); else this.Cair() })
+        this.adicionarProcesso(() => { if (this.estado === "pulando") this.Pular(); else this.Cair() })
     }
 
     Pular() {

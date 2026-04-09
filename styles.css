@@ -12,10 +12,37 @@ main {
     overflow: hidden;
 }
 
+div {
+    position: absolute;
+}
+
 .jogador {
-    background-color: blue;
+    background-image: url(personagem.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .plataforma {
     background-color: red;
+}
+
+.tela-do-jogo {
+    position: relative;
+    background-color: black;
+    overflow: hidden;
+}
+
+.tela-do-jogo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image: url(tela-do-jogo.webp);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+    opacity: 0.3; /* 👈 controla aqui */
+    z-index: 0;
 }
