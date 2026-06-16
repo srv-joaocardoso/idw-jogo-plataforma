@@ -8,19 +8,36 @@ body {
 }
 
 main {
-    background-color: yellow;
+    background-color: purple;
     overflow: hidden;
 }
 
+.meio,
+.base {
+    height: 3px;
+    width: 100vh;
+}
+
+.base {
+    background-color: yellow;
+}
+
+.meio {
+    background-color: green;
+}
+
+
+main,
 div {
     position: absolute;
 }
 
+
 .jogador {
-    background-image: url(personagem.png);
-    background-repeat: no-repeat;
+    background-color: blue;
+    /* background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
+    background-position: center; */
 }
 
 .plataforma {
@@ -28,11 +45,11 @@ div {
 }
 
 .tela-do-jogo {
-    position: relative;
-    background-color: black;
-    overflow: hidden;
+    /* position: relative */
+    background-color: yellow;
 }
 
+/*
 .tela-do-jogo::before {
     content: "";
     position: absolute;
@@ -43,6 +60,6 @@ div {
     background-size: cover;
     background-position: center;
 
-    opacity: 0.3; /* 👈 controla aqui */
+    opacity: 0.3;
     z-index: 0;
-}
+}*/
