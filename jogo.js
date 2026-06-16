@@ -1,15 +1,17 @@
-class Jogo extends ObjetoDoJogo {x
+class Jogo extends ObjetoDoJogo {
+    x
     constructor() {
         super()
 
-        this.tela = this.inciarTelaDoJogo({ largura: 400, altura: 500 })
+        this.tela = this.inciarTelaDoJogo({ largura: 1280, altura: 720 })
         this.pontuacao = this.iniciarPontuacao()
 
-        this.jogador = new Jogador()
+        this.jogador = new Jogador(600, 300)
+        this.posicaoAnteriorX = this.jogador.posicao.x
         this.registrarCapturaDoMouseNoJogador()
         this.tela.elementoHTML.append(this.jogador.elementoHTML)
 
-        this.estagio = new EstagioClassico(this.jogador, { x: 0, y: this.tela.dimensoes.altura }, { largura: 400, altura: 500 })
+        this.estagio = new EstagioClassico(this.jogador, { x: 0, y: this.tela.dimensoes.altura }, { largura: 1280, altura: 720 })
         this.tela.elementoHTML.append(this.estagio.elementoHTML)
 
         /** @type {Plataforma[]} */
@@ -23,8 +25,28 @@ class Jogo extends ObjetoDoJogo {x
 
     rodarLoop() {
         this.processarElementos()
-        this.renderizarElementos()
 
+        // Se não tiver jogador, é exibido a tela de fim de jogo
+        if(this.jogador == null) {
+            const telaFim = document.createElement('div')
+            telaFim.className = 'tela-fim'
+            this.tela.elementoHTML.append(telaFim)
+            
+            const textoFim = document.createElement('h1')
+            textoFim.innerHTML = `Fim do Jogo! Sua pontuação foi: <spam class: "placar-texto">${this.pontuacao.valor}</span>.` 
+            telaFim.append(textoFim)
+            
+            const botaoFim = document.createElement('button')
+            botaoFim.innerText = "Recomeçar"
+            botaoFim.addEventListener('click', () => {
+                location.reload()
+            })
+            telaFim.append(botaoFim)
+
+            return
+        }
+        
+        this.renderizarElementos()
         requestAnimationFrame(() => this.rodarLoop())
     }
 
@@ -47,6 +69,14 @@ class Jogo extends ObjetoDoJogo {x
             this.estagio.rodarTodosOsProcessos()
         }
 
+        // Inverte jogador para o lado que ele está se movendo
+        if (this.posicaoAnteriorX > this.jogador.posicao.x) {
+            this.jogador.elementoHTML.style.transform = "scaleX(-1)"
+        } else if (this.posicaoAnteriorX < this.jogador.posicao.x) {
+            this.jogador.elementoHTML.style.transform = "scaleX(1)"
+        }
+
+        this.posicaoAnteriorX = this.jogador.posicao.x
         this.yBase = this.estagio.dimensoes.altura - this.tela.dimensoes.altura
 
         const plataformasAbaixoDoJogador = this.plataformas.filter(plataforma => plataforma.posicao.y < (jogadorControle.posicao.y - jogadorControle.dimensoes.altura))
@@ -58,7 +88,7 @@ class Jogo extends ObjetoDoJogo {x
 
         // Executa função na primeira plataforma que o jogador colide na queda.
         plataformasAbaixoDoJogador
-            .findLast(plataforma => this.verificarColisaoQuedaJogadorComPlataforma(jogadorControle, plataforma))
+            .findLast(plataforma => plataforma.tangivel && this.jogador.tangivel && this.verificarColisaoQuedaJogadorComPlataforma(jogadorControle, plataforma))
             ?.acaoAoColidirComJogador(this.jogador)
 
         // Apaga plataformas inferiores a tela visual de todos os estagios.
@@ -69,16 +99,17 @@ class Jogo extends ObjetoDoJogo {x
             }
         }
 
-        // Ação do jogador ao sair da tela
-        if (this.jogador.posicao.y < this.yBase) this.jogador.projecaoVertical = 0.15
-
         this.linhaDeCorte = this.yBase + (this.tela.dimensoes.altura / 2)
 
         if (this.jogador.posicao.y > this.linhaDeCorte) this.estagio.dimensoes.altura += this.jogador.posicao.y - this.linhaDeCorte
+
+        // Ação do jogador ao sair da tela
+        if (this.jogador.posicao.y < this.yBase) this.jogador = null
     }
 
     verificarColisaoQuedaJogadorComPlataforma(posicaoControleDoJogador, plataforma = new Plataforma()) {
-        if (posicaoControleDoJogador.posicao.y < this.jogador.posicao.y) return
+        if (!this.jogador.tangivel || !plataforma.tangivel) return false
+        if (posicaoControleDoJogador.posicao.y < this.jogador.posicao.y) return false
 
         // Calcular Rastro de Jogador
         const rastro = {
@@ -126,6 +157,10 @@ class Jogo extends ObjetoDoJogo {x
 
     registrarCapturaDoMouseNoJogador() {
         document.addEventListener("mousemove", ({ clientX }) => {
+            if(this.jogador == null) return
+
+            if (this.jogador.tangivel == false) return
+
             const coordenadaLimite = this.tela.dimensoes.largura - this.jogador.dimensoes.largura
 
             if (clientX > coordenadaLimite) this.jogador.posicao.x = coordenadaLimite

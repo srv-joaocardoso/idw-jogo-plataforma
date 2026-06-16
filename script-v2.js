@@ -1,1 +1,1 @@
-const jogo = new Jogo()
+var jogo = new Jogo()

@@ -10,6 +10,7 @@ class ObjetoDoJogo {
         this.dimensoes = dimensoes
         this.classeHTML = classe
         this.processos = []
+        this.tangivel = true
     }
 
     criarElemento() {
@@ -20,7 +21,6 @@ class ObjetoDoJogo {
     }
 
     renderizar(offsetY = 0) {
-        this.elementoHTML.className = this.classeHTML
         this.elementoHTML.style.width = this.dimensoes.largura + "px"
         this.elementoHTML.style.height = this.dimensoes.altura + "px"
 
