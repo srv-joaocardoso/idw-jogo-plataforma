@@ -25,27 +25,30 @@ class Jogo extends ObjetoDoJogo {
 
     rodarLoop() {
         this.processarElementos()
-
         // Se não tiver jogador, é exibido a tela de fim de jogo
-        if(this.jogador == null) {
+        if (this.jogador == null) {
+            const audioFim = new Audio("./watersplash.mp3")
+            audioFim.play()
+
             const telaFim = document.createElement('div')
             telaFim.className = 'tela-fim'
             this.tela.elementoHTML.append(telaFim)
-            
+
             const textoFim = document.createElement('h1')
-            textoFim.innerHTML = `Fim do Jogo! Sua pontuação foi: <spam class: "placar-texto">${this.pontuacao.valor}</span>.` 
+            textoFim.innerHTML = `Fim do Jogo! Sua pontuação foi: <spam class="placar-texto">${this.pontuacao.valor}</spam>.`
             telaFim.append(textoFim)
-            
+
             const botaoFim = document.createElement('button')
             botaoFim.innerText = "Recomeçar"
             botaoFim.addEventListener('click', () => {
+
                 location.reload()
             })
             telaFim.append(botaoFim)
 
             return
         }
-        
+
         this.renderizarElementos()
         requestAnimationFrame(() => this.rodarLoop())
     }
@@ -58,7 +61,7 @@ class Jogo extends ObjetoDoJogo {
         }
 
         // Calcula TimeScale
-        const timeScaleBase = 10
+        const timeScaleBase = 15
         const aceleracaoTimeScale = 17
         const frequenciaAceleracaoTimeScale = 0.02
         this.timeScale = (timeScaleBase + aceleracaoTimeScale * Math.log(1 + frequenciaAceleracaoTimeScale * this.pontuacao.valor)).toFixed(0)
@@ -67,6 +70,11 @@ class Jogo extends ObjetoDoJogo {
             this.jogador.rodarTodosOsProcessos()
             this.plataformas.forEach(plataforma => plataforma.rodarTodosOsProcessos())
             this.estagio.rodarTodosOsProcessos()
+        }
+
+        if (this.jogador.tangivel == false) {
+            this.jogador = null
+            return
         }
 
         // Inverte jogador para o lado que ele está se movendo
@@ -157,7 +165,7 @@ class Jogo extends ObjetoDoJogo {
 
     registrarCapturaDoMouseNoJogador() {
         document.addEventListener("mousemove", ({ clientX }) => {
-            if(this.jogador == null) return
+            if (this.jogador == null) return
 
             if (this.jogador.tangivel == false) return
 

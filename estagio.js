@@ -8,14 +8,14 @@ class EstagioClassico extends ObjetoDoJogo {
 
         this.jogador = jogador
 
-        this.intervaloEntrePlataformas = 70
+        this.intervaloEntrePlataformas = 120
         this.criarElemento()
 
         this.larguraPlataforma = 0
 
         this.adicionarProcesso(() => {
             if (this.plataformas.length == 0) {
-                const primeiraPlataforma = new PlataformaTrampolim(dimensoes.largura / 2, 100)
+                const primeiraPlataforma = new PlataformaPulante(dimensoes.largura / 2, 100)
                 this.larguraPlataforma = primeiraPlataforma.dimensoes.largura
                 this.plataformas.push(primeiraPlataforma)
                 this.elementoHTML.append(primeiraPlataforma.elementoHTML)
@@ -25,7 +25,9 @@ class EstagioClassico extends ObjetoDoJogo {
             Array.from({ length: (this.dimensoes.altura - yUltimaPlataforma) / this.intervaloEntrePlataformas }, (_, i) => {
                 const x = Math.random() * (this.dimensoes.largura - this.larguraPlataforma)
                 const y = yUltimaPlataforma + ((1 + i) * this.intervaloEntrePlataformas)
+                
                 const novaPlataforma = this.criarPlataforma(x, y)
+                
                 this.elementoHTML.append(novaPlataforma.elementoHTML)
                 this.plataformas.push(novaPlataforma)
             })
@@ -33,27 +35,25 @@ class EstagioClassico extends ObjetoDoJogo {
     }
 
     criarPlataforma(x, y) {
-        const alturaRelativa = Math.min(1, Math.max(0, y / this.dimensoes.altura))
+        const porcentagem = Math.random()
         const id = Plataforma.id
 
         if (id % 4 === 0) {
             return new PlataformaPulante(x, y)
         }
 
-        const taxaTrampolim = 0.6 - alturaRelativa * 0.35
-        const taxaQuebrante = 0.25 + alturaRelativa * 0.25
-        const taxaEspinho = 1 - taxaTrampolim - taxaQuebrante
-
-        const aleatorio = (id % 100) / 100
-
-        if (aleatorio < taxaTrampolim) {
+        if (porcentagem < 0.05) { // 5%
             return new PlataformaTrampolim(x, y)
         }
 
-        if (aleatorio < taxaTrampolim + taxaQuebrante) {
+        if (porcentagem < 0.12) { // 7%
+            return new PlataformaEspinho(x, y)
+        }
+
+        if (porcentagem < 0.3) { // 18%
             return new PlataformaQuebrante(x, y)
         }
 
-        return new PlataformaEspinho(x, y)
+        return new PlataformaPulante(x, y) // 70%
     }
 }
